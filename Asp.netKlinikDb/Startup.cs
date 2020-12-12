@@ -75,7 +75,7 @@ namespace Asp.netKlinikDb
             );
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "MyAPI", Description = "Swagger Core Api" });
+                c.SwaggerDoc("v1", new Info { Title = "Klinik GIgi REST API", Description = "Swagger Core Api" });
 
             });
 
