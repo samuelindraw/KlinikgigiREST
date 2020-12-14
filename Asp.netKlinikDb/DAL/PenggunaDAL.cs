@@ -224,7 +224,7 @@ namespace Asp.netKlinikDb.DAL
                    
                     DetailPegawai pegawai = new DetailPegawai();
 
-                    var pegawaii = await _detailPegawai.getusername(obj.Username);
+                    var pegawaii = await _detailPegawai.getusername(obj.Username,obj.TenantID);
                     if(pegawaii == null)
                     
                     {

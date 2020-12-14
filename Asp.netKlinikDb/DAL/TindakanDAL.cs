@@ -54,10 +54,7 @@ namespace Asp.netKlinikDb.DAL
                         var result = dt_prosentase.Where(e => e.IdJenisTindakan == obj.IdJenisTindakan).SingleOrDefault();
 
                         obj.Persenan = Convert.ToInt16(result.Prosen);
-                        obj.BiayaDasar = dt_JenisTindakanid.Biaya;//CONTOH BIAYA DAN BIAYA KELIPATAN 
-                        obj.BiayaKelipatan = dt_JenisTindakanid.BiayaKelipatan.GetValueOrDefault();//biaya dasar di tentukan dari pengambilan data dari data tindakan
-                        obj.Biaya = obj.BiayaDasar + obj.BiayaKelipatan;
-                        obj.Status = "belum";
+                        
                         _context.Add(obj);
                         await _context.SaveChangesAsync();
                         List<pilihGIgi> stc = new List<pilihGIgi>();
@@ -136,7 +133,7 @@ namespace Asp.netKlinikDb.DAL
                         }
                         //foreach (var item in stc)
                         var totalgigi = stc.Count();
-                        obj.Biaya = (obj.BiayaDasar + obj.BiayaKelipatan) * totalgigi;
+                        obj.Biaya = obj.BiayaDasar * totalgigi;
                         obj.Posisi = stc;
                         obj.IdTindakan = obj.IdTindakan;
                         await UpdateAsync(obj);
@@ -183,10 +180,7 @@ namespace Asp.netKlinikDb.DAL
                         var result = dt_prosentase.Where(e => e.IdJenisTindakan == obj.IdJenisTindakan).SingleOrDefault();
 
                         obj.Persenan = Convert.ToInt16(result.Prosen);
-                        obj.BiayaDasar = dt_JenisTindakanid.Biaya;//CONTOH BIAYA DAN BIAYA KELIPATAN 
-                        obj.BiayaKelipatan = dt_JenisTindakanid.BiayaKelipatan.GetValueOrDefault();//biaya dasar di tentukan dari pengambilan data dari data tindakan
-                        obj.Biaya = obj.BiayaDasar + obj.BiayaKelipatan;
-                        obj.Status = "belum";
+                      
                         List<pilihGIgi> stc = new List<pilihGIgi>();
 
                         foreach (var item in obj.GigiRawatK1)
@@ -262,8 +256,12 @@ namespace Asp.netKlinikDb.DAL
 
                         }
                         var Gigiselection = stc.Count();
-                        obj.Biaya = (obj.BiayaDasar + obj.BiayaKelipatan) * Gigiselection;
+                        obj.Biaya = obj.BiayaDasar * Gigiselection;
                         obj.Posisi = stc;
+                    }
+                    else
+                    {
+                        throw new Exception("Data Update GAGAL");
                     }
 
                     var data = await GetById(obj.IdTindakan);
@@ -276,7 +274,6 @@ namespace Asp.netKlinikDb.DAL
                             data.Biaya = obj.Biaya;
                             data.Diagnosis = obj.Diagnosis;
                             data.BiayaDasar = obj.BiayaDasar;
-                            data.BiayaKelipatan = obj.BiayaKelipatan;
                             data.Status = obj.Status;
                             data.Posisi = obj.Posisi;
                             await _context.SaveChangesAsync();
@@ -301,9 +298,9 @@ namespace Asp.netKlinikDb.DAL
                               where c.IdTransaksi == IdTransaksi
                               select c).ToListAsync();
 
-            
+
             List<checkBoxItem> datachecked = new List<checkBoxItem>();
-            foreach (var item in data )
+            foreach (var item in data)
             {
                 var allgigi = _context.PosisiGigi.Select(vm => new checkBoxItem()
                 {
@@ -320,9 +317,9 @@ namespace Asp.netKlinikDb.DAL
                     IsChecked = chekd.IsChecked
                 }).ToList();
                 item.GigiRawat = datachecked;
-               
+
             }
-           
+
             return data;
         }
 
@@ -376,7 +373,7 @@ namespace Asp.netKlinikDb.DAL
         public async Task Transaksi_Selesai(Tindakan tindakan)
         {
             var Id = tindakan.IdTransaksi;
-            var transaksi = await _Transaksi.GetById(Id);//????
+            var transaksi = await _Transaksi.GetById(Id);
             //Tindakan data = new Tindakan();
             foreach (var item in transaksi.Tindakan)
             {

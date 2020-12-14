@@ -40,21 +40,6 @@ namespace Asp.netKlinikDb.Controllers
             var Models = await _Pengguna.GetAll();
             return Models;
         }
-        // POST: api/Pengguna
-        //[HttpPost]
-        //[Authorize(Roles = "Admin,Dokter")]
-        //public async Task<IActionResult> Post([FromBody] Pengguna pengguna)
-        //{
-        //    try
-        //    {
-        //            await _Pengguna.CreateAsync(pengguna);
-        //            return Ok("Tambah Data Berhasil");
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
         //}
         // GET: api/User/5
         [HttpGet("getpenggunausername/{Username}")]
@@ -68,14 +53,6 @@ namespace Asp.netKlinikDb.Controllers
 
             return model;
         }
-        //[HttpGet("getusername/{Username}")]
-        ////[Authorize(Roles = "Admin")]
-        //public async Task<Pengguna> getusername(string Username)
-        //{
-
-        //    var model = await _Pengguna.getusername(Username);
-        //    return model;
-        //}
         [HttpGet("getuserbyrole/{tenantID}/{rolename}")]
         //[Authorize(Roles = "Admin")]
         public async Task<IEnumerable<Pengguna>> getuserbyrole(string tenantID, string rolename)
@@ -112,21 +89,5 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //// DELETE: api/Pengguna/5
-        //[HttpDelete("{id}")]
-        //[Authorize(Roles  = "Admin")]
-        //public async Task<IActionResult> Delete(string id)
-        //{
-        //    try
-        //    {
-              
-        //        await _Pengguna.DeletebyUser(id);
-        //        return Ok("Data berhasil didelete");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-        //}
     }
 }

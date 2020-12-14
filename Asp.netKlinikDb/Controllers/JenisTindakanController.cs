@@ -23,7 +23,7 @@ namespace Asp.netKlinikDb.Controllers
 
         // GET: api/jenistindakan
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Dokter")]
         public async Task<IEnumerable<JenisTindakan>> GetKatJenis()
         {
 
@@ -98,7 +98,7 @@ namespace Asp.netKlinikDb.Controllers
 
         // DELETE: api/KatBarang/5
         [HttpDelete("{id}")]
-       [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

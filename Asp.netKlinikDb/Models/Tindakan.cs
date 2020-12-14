@@ -24,8 +24,6 @@ namespace Asp.netKlinikDb.Models
         //beda dengan yang di jenis tindakan apa ? 
         public int BiayaDasar { get; set; }
         //apakah ini berdasarkan jumlah posisi x deengan biaya dasar
-        public int BiayaKelipatan { get; set; }
-        //status perbedaan dengan gigi palsu apa ? 
         public string Status { get; set; }
         public string TenantID { get; set; }
 

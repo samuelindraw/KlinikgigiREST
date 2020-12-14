@@ -23,6 +23,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // POST: api/Barangs
         [HttpPost]
+        [Authorize(Roles = "Admin, Dokter")]
         public async Task<IActionResult> Post([FromBody] Jual Jual)
         {
             try

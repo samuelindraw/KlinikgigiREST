@@ -21,19 +21,16 @@ namespace Asp.netKlinikDb.Controllers
     {
 
         private IUser _userService;
-        private IUserRole _roleService;
         private IPengguna _Pengguna;
         private IDetailPasien _detailPasien;
         private IDetailPegawai _detailPegawai;
         private ITenantPengguna _tenantPengguna;
         private IJenisTindakan _JenisTindakan;
         private IEmailSender _emailSender;
-        private IConfiguration _confirguration;
         private AppDbContext _context;
 
 
         private UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private IProsentase  _prosentase;
 
 
@@ -80,7 +77,7 @@ namespace Asp.netKlinikDb.Controllers
  
                 else
                 {
-                    //logging tenant dimatikan agar tidak menganggu proses sorting tenant id
+                    
                     //sebagai pertanda user login di tenant mana 
                     user.TenantID = tenantpengguna.TenantID;
                     user.TenantName = tenantpengguna.Tenant.TenantName;
@@ -245,22 +242,7 @@ namespace Asp.netKlinikDb.Controllers
         { 
 
             var models = await _userService.GetAll();
-            foreach (var item in models)
-            {
-
-                if (item.rolename != "Pasien")
-                {
-                    var data_pegawai = await _detailPegawai.getusername(item.Username);
-                    item.Registrasi = data_pegawai.TanggalJoin;
-
-                }
-                else
-                {
-                    var data_pasien = await _detailPasien.getusername(item.Username);
-                    item.Registrasi = data_pasien.Registrasi;
-
-                }
-            }
+         
             return models;
         }
         [HttpPut("Enable/{Username}")]
@@ -343,8 +325,8 @@ namespace Asp.netKlinikDb.Controllers
         }
         // DELETE: api/User/5
         // masih manual optional untuk jaga jaga jika data ingin di delete permanen 
-        [HttpDelete]
-        //[Authorize(Roles = "Admin")]
+        [HttpDelete("{Username}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult>Delete(string Username)
         {
            
@@ -374,7 +356,7 @@ namespace Asp.netKlinikDb.Controllers
                         }
                         //detail gaji to
                         //pengajian
-                        var cekpegawai = await _detailPegawai.getusername(Username);
+                        var cekpegawai = await _detailPegawai.getusername(Username,pengguna.TenantID);
                         if (cekpegawai != null)
                         {
                             await _detailPegawai.DeleteByuser(Username);

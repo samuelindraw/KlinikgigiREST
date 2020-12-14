@@ -32,12 +32,12 @@ namespace Asp.netKlinikDb.Controllers
             return models;
         }
         // GET: api/DetailPegawai/5 
-        [HttpGet("{Username}")]
-        //[Authorize(Roles = "Admin,Dokter,Perawat")]
-        public async Task<DetailPegawai> Get(string Username)
+        [HttpGet("{Username}/{tenantID}")]
+        [Authorize(Roles = "Admin,Dokter,Perawat")]
+        public async Task<DetailPegawai> Get(string Username, string tenantID)
         {
 
-            var model = await _DetailPegawai.getusername(Username);
+            var model = await _DetailPegawai.getusername(Username, tenantID);
             return model;
         }
         [HttpPost]

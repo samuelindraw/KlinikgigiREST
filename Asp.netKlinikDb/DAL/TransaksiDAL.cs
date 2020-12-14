@@ -106,7 +106,7 @@ namespace Asp.netKlinikDb.DAL
 
         public async Task<Transaksi> GetById(int id)
         {
-            var data = await (from c in _context.Transaksi.Include(r => r.Tenant).Include(r => r.DetailPasien).Include(r=> r.DetailPenggajian).
+            var data = await (from c in _context.Transaksi.Include(r => r.Tenant).Include(r=>r.Pengguna).Include(r => r.DetailPasien).ThenInclude(r=>r.Pengguna).Include(r=> r.DetailPenggajian).
                               Include(r => r.Tindakan).
                               ThenInclude(r => r.Posisi).Include(r => r.Tindakan).ThenInclude(r => r.JenisTindakan).Include(r => r.Jual).ThenInclude(r => r.Barang)
                               where c.IdTransaksi == id

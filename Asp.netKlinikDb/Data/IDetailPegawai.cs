@@ -8,7 +8,7 @@ namespace Asp.netKlinikDb.Data
 {
     public interface IDetailPegawai : ICrud<DetailPegawai>
     {
-        Task<DetailPegawai> getusername(string Username);
+        Task<DetailPegawai> getusername(string Username, string tenantID);
         Task DeleteByuser(string Username);
     }
 }

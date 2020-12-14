@@ -20,8 +20,6 @@ namespace Asp.netKlinikDb.Models
         public string Jenis { get; set; }
         //lait di database
         public int Biaya { get; set; }
-        public int? BiayaKelipatan { get; set; }
-        //sengaja contoh sebagai contoh     
         public string Keterangan { get; set; }
         public string TenantID { get; set; }
 

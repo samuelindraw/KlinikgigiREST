@@ -18,7 +18,6 @@ namespace Asp.netKlinikDb.Controllers
     {
         private IUserRole _userRoleService;
         private UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         public UserRoleController(IUserRole userroleservice, UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager)
         {

@@ -24,7 +24,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // POST: api/DetailBeli
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Post([FromBody] DetailPenggajian detailPenggajian)
         {
             try
@@ -40,7 +40,7 @@ namespace Asp.netKlinikDb.Controllers
        
         // DELETE: api/Barangs/5
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try

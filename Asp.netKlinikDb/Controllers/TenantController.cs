@@ -69,7 +69,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // DELETE: api/KatBarang/5
         [HttpDelete("{id}")]
-        //[Authorize(Roles  = "Admin")]
+        [Authorize(Roles  = "Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             try

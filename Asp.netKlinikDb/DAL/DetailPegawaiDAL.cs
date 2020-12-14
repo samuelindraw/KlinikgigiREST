@@ -88,17 +88,21 @@ namespace Asp.netKlinikDb.DAL
             return data;
         }
 
-        public async Task<DetailPegawai> getusername(string Username)
+        public async Task<DetailPegawai> getusername(string Username, string tenantID)
         {
-            var data = await (from c in _context.DetailPegawai.Include(r => r.Penggajian).ThenInclude(r => r.Tenant).Include(r => r.Prosentase).ThenInclude(r=>r.JenisTindakan).ThenInclude(r => r.Tenant)
+            var data = await (from c in _context.DetailPegawai
                               where c.Username == Username
                               select c).SingleOrDefaultAsync();
+
+            data.Penggajian = await _context.Penggajian.Where(r => r.Username == Username && r.TenantID == tenantID).Include(r => r.Tenant).ToListAsync();
+            data.Prosentase = await _context.Prosentase.Where(r => r.Username == Username && r.TenantID == tenantID).Include(r => r.JenisTindakan).Include(r => r.Tenant).ToListAsync();
+
             return data;
         }
 
         public async Task UpdateAsync(DetailPegawai obj)
         {
-            .//by tenant id
+            //by tenant id
             var data = await _context.DetailPegawai.Where(r => r.Username == obj.Username).SingleOrDefaultAsync();
             if (data != null)
             {

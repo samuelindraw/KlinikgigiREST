@@ -30,7 +30,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // GET: api/Transaksi
         [HttpGet]
-        //[Authorize(Roles  = "Admin")]
+        [Authorize(Roles  = "Admin, Dokter")]
         public async Task<IEnumerable<Transaksi>> Transaksi()
         {
             var Models = await _Transaksi.GetAll();
@@ -38,7 +38,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // GET: api/Transaksi/5
         [HttpGet("{id}")]
-        //[Authorize(Roles = "Admin,Dokter")]
+        [Authorize(Roles = "Admin,Dokter,Perawat,Pasien")]
         public async Task<Transaksi> Get(int Id)
         {
             var model = await _Transaksi.GetById(Id);
@@ -46,7 +46,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // POST: api/Transaksi
         [HttpPost]
-        //[Authorize(Roles = "Admin,Dokter")]
+        [Authorize(Roles = "Admin,Dokter")]
         public async Task<IActionResult> Post([FromBody] Transaksi Transaksi)
         {
             try
@@ -66,7 +66,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // DELETE: api/Transaksi/5
         [HttpDelete("{id}")]
-        //[Authorize(Roles  = "Admin")]
+        [Authorize(Roles  = "Admin")]
         public async Task<IActionResult> Delete(int Id)
         {
             try
@@ -87,7 +87,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // DELETE: api/Transaksi/5
         [HttpDelete("BatalTransaksi/{Id}")]
-        //[Authorize(Roles = "Dokter")]
+        [Authorize(Roles = "Dokter")]
         public async Task<IActionResult> BatalTransaksi(int Id)
         {
             try
@@ -115,7 +115,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // PUT: api/Transaksi/5
         [HttpPut]
-        //[Authorize(Roles  = "Admin,Dokter")]
+        [Authorize(Roles  = "Admin,Dokter")]
         public async Task<IActionResult> Put([FromBody] Transaksi Transaksi)
         {
             try

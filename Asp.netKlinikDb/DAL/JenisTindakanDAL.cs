@@ -31,9 +31,10 @@ namespace Asp.netKlinikDb.DAL
         {
             //result dengan mencari dari hasil search tenant
             var data = await getbytenantid(obj.TenantID);
-            var result = data.Where(e => e.Jenis == obj.Jenis).ToList();
+            //var result = data.Where(e => e.Jenis == obj.Jenis).ToList();
+            var result = _context.JenisTindakan.Where(e => e.Jenis == obj.Jenis && e.IdKatJenis == obj.IdKatJenis).SingleOrDefault();
             //mencari data tenant ccc
-            if (result.Count == 0)
+            if (result == null)
             {
                
                 var dt_dokter = await _pengguna.dataUserPerTenant(obj.TenantID,"Dokter");
@@ -137,7 +138,6 @@ namespace Asp.netKlinikDb.DAL
                     data.IdKatJenis = obj.IdKatJenis;
                     data.Jenis = obj.Jenis;
                     data.Biaya = obj.Biaya;
-                    data.BiayaKelipatan = obj.BiayaKelipatan;
                     data.Keterangan = obj.Keterangan;
                     data.TenantID = obj.TenantID;
                     await _context.SaveChangesAsync();
