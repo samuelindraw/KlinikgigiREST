@@ -9,6 +9,10 @@ namespace Asp.netKlinikDb.Models
     public class Beli
     {
         // kalau stok barang habis munculkan notif ke perawat/admin ada stok yang mau habis ? < 3
+        public Beli()
+        {
+            detailBeli = new List<DetailBeli>();
+        }
         [Key]
         public int IdBeli { get; set; }
         [DataType(DataType.Date)]
@@ -21,7 +25,7 @@ namespace Asp.netKlinikDb.Models
         // count data pembeian dari setiap detail beli ? 
         public int TotalHarga { get; set; }
         public Tenant Tenant { get; set; }
-        public DetailBeli detailBeli { get; set; }
+        public IEnumerable<DetailBeli> detailBeli { get; set; }
 
     }
 }

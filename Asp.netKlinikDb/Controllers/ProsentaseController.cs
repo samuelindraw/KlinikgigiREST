@@ -49,7 +49,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // GET: api/Barang
         [HttpGet("getbytenantid/{tenantID}")]
-        [Authorize(Roles  = "Admin")]
+        //[Authorize(Roles  = "Admin")]
         public async Task<IEnumerable<Prosentase>> getbytenantid(string tenantID)
         {
 
@@ -112,13 +112,12 @@ namespace Asp.netKlinikDb.Controllers
         }
         // GET: api/Peosentase
         [HttpGet]
-        [Authorize(Roles  = "Admin")]
+        //[Authorize(Roles  = "Admin")]
         public async Task<IEnumerable<Prosentase>> GetProsentase()
         {
 
             var models = await _Prosentase.GetAll();
             return models;
         }
-
     }
 }

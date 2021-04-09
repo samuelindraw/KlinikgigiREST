@@ -55,7 +55,7 @@ namespace Asp.netKlinikDb.DAL
 
         public async Task<IEnumerable<Beli>> GetAll()
         {
-            var data = await(from r in _context.Beli.Include(r => r.Tenant).Include(c => c.detailBeli)
+            var data = await(from r in _context.Beli.Include(r => r.Tenant)
                              orderby r.IdBeli ascending
                              select r).ToListAsync();
             return data;

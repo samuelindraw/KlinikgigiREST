@@ -31,7 +31,8 @@ namespace Asp.netKlinikDb.DAL
         public async Task CreateAsync(Transaksi obj)
         {
             
-            var datapasien = await _context.Pengguna.Where(r => r.IdPasien == obj.IdPasien).Include(r=>r.detailPasien).SingleOrDefaultAsync();
+            var datapasien =await _context.DetailPasien.Where(d => d.IdPasien == obj.IdPasien).SingleOrDefaultAsync();
+                       
             IdentityOptions _option = new IdentityOptions();
 
             var searchuser = await _userManager.FindByNameAsync(datapasien.Username);
@@ -39,7 +40,7 @@ namespace Asp.netKlinikDb.DAL
             var rolename = (_option.ClaimsIdentity.RoleClaimType, role.SingleOrDefault()).Item2;
 
             
-            if (datapasien != null && datapasien.rolename == rolename)
+            if (datapasien != null && rolename == "Pasien")
             {
                 
                 var dt_periksa = await _context.Transaksi.Where(r => r.IdPasien == obj.IdPasien && r.Tanggal == obj.Tanggal).ToListAsync();
@@ -48,7 +49,7 @@ namespace Asp.netKlinikDb.DAL
                 {
                     try
                     {
-                        obj.DetailPasienID = datapasien.detailPasien.DetailPasienID;
+                        obj.DetailPasienID = datapasien.DetailPasienID;
                         _context.Add(obj);
                         await _context.SaveChangesAsync();
                     }

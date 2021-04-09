@@ -9,6 +9,5 @@ namespace Asp.netKlinikDb.Data
     public interface IDetailPenggajian : ICrud<DetailPenggajian>
     {
       
-
     }
 }

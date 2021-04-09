@@ -12,6 +12,5 @@ namespace Asp.netKlinikDb.Models
         public string RoleID { get; set; }
         public string RoleName { get; set; }
       
-
     }
 }

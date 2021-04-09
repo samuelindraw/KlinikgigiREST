@@ -30,7 +30,6 @@ namespace Asp.netKlinikDb.Controllers
             var Models = await _KatJenis.GetAll();
             return Models;
         }
-
         // GET: api/KatJenis/5
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin,Dokter")]
@@ -45,14 +44,11 @@ namespace Asp.netKlinikDb.Controllers
         [Authorize(Roles = "Admin,Dokter")]
         // POST: api/getbarangbytenantid/ PAKE ROUTE AGAR AKSES NYA TIDAK NUMPUK DENGAN GET ID
         // CEK apakah id kat barang sudah sesuai dengan Tenant s
-        public async Task<IActionResult> sortjenistindakanbytennt(string TenantID)
+        public async Task<IActionResult> sortjenistindakanbytennt(string tenantID)
         {
-
-            var model = await _KatJenis.getbytenantid(TenantID);
+            var model = await _KatJenis.getbytenantid(tenantID);
             return Ok(model);
-
         }
-
         // PUT: api/KatBarang/5
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
@@ -68,7 +64,6 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Post([FromBody] KatJenis KatJenis)
@@ -84,7 +79,6 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }   
         }
-
         // DELETE: api/KatBarang/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]

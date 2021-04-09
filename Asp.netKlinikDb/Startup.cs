@@ -44,12 +44,15 @@ namespace Asp.netKlinikDb
                options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+
            });
             var EmailConfig = Configuration
                 .GetSection("EmailConfirguration")
                 .Get<EmailConfirguration>();
                 services.AddSingleton(EmailConfig);
                 services.AddScoped<IEmailSender, EmailSender>();
+
+
                 services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
            
@@ -75,8 +78,24 @@ namespace Asp.netKlinikDb
             );
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "Klinik GIgi REST API", Description = "Swagger Core Api" });
-
+               
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "Dental Clinic API",
+                    Version = "v1",
+                    Description = "Description for the API goes here.",
+                });
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme()
+                {
+                    Description = "JWT Authorization header \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] { } }
+                });
             });
 
             services.AddAuthentication(x =>
@@ -115,7 +134,7 @@ namespace Asp.netKlinikDb
             services.AddTransient<ITransaksi, TransaksiDAL>();
             services.AddTransient<ITindakan, TindakanDAL>();
             services.AddTransient<IPenggajian, PenggajianDAL>();
-            services.AddTransient<IJual, JualDAL>();
+            services.AddTransient<IJual, JualDAL>();    
             services.AddTransient<IposisiGigi, posisiGigiDAL>();
             services.AddTransient<IpilihGIgi, pilihGIgiDAL>();
             services.AddTransient<IDetailPenggajian, DetailPenggajianDAL>();
@@ -131,7 +150,7 @@ namespace Asp.netKlinikDb
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -141,7 +160,6 @@ namespace Asp.netKlinikDb
             {
                 app.UseHsts();
             }
-            app.UseSession();
             app.UseCors(x => x
             .AllowAnyOrigin()
             .AllowAnyMethod()
@@ -150,12 +168,13 @@ namespace Asp.netKlinikDb
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
-            app.UseStaticFiles();
+
+            app.UseStaticFiles();   
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAPI V1");
-               
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dental Klinik API V1");
+
             });
 
         }

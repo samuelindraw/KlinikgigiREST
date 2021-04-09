@@ -17,6 +17,7 @@ namespace Asp.netKlinikDb.Models
         public string Email { get; set; }
         public string rolename { get; set; }
         public string TenantID { get; set; }
+        public string currentrole { get; set; }
         public string TenantName { get; set; }
 
     }

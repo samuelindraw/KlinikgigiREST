@@ -53,7 +53,9 @@ namespace Asp.netKlinikDb.DAL
             {
                 foreach (var data in userprosentase)
                 {
-                    _context.Prosentase.Remove(data);
+                    var datas = await GetById(data.IdProsentase);
+                    _context.Prosentase.Remove(datas);
+                    await _context.SaveChangesAsync();
                 }
             }
             else

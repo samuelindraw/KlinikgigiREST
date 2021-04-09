@@ -28,10 +28,8 @@ namespace Asp.netKlinikDb.Controllers
         {
             try
             {
-
                 await _jual.CreateAsync(Jual);
                 return Ok("Tambah Data Berhasil");
-
             }
             catch (Exception ex)
             {

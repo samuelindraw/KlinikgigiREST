@@ -143,15 +143,15 @@ namespace Asp.netKlinikDb.DAL
             return role;
         }
 
-        public async Task<IEnumerable<Users>> GetUserRole(string Nama)
+        public async Task<IEnumerable<User>> GetUserRole(string Nama)
         {
 
             var userrolelist = await _userManager.GetUsersInRoleAsync(Nama);
             
             var list = (from user in userrolelist
-                        select new Users
+                        select new User
                         {
-                            Id = user.Id,
+                            
                             Username = user.UserName,
                             Email = user.Email,
                             rolename = Nama
@@ -160,7 +160,7 @@ namespace Asp.netKlinikDb.DAL
 
             list.Select(async user =>
             {
-                var userEntity = await _userManager.FindByIdAsync(user.Id);
+                var userEntity = await _userManager.FindByNameAsync(user.Username);
                 user.rolename = string.Join("; ", await _userManager.GetRolesAsync(userEntity));
             }).ToList();
 

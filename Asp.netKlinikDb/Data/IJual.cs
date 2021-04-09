@@ -8,7 +8,6 @@ namespace Asp.netKlinikDb.Data
 {
     public interface IJual : ICrud<Jual>
     {
-        
-       
+          
     }
 }

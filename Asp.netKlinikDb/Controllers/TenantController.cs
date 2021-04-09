@@ -26,11 +26,10 @@ namespace Asp.netKlinikDb.Controllers
 
 
             var Models = await _tenant.GetAll();
-
             return Models;
         }
         // GET: api/Tenant/5
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
         [Authorize(Roles  = "Admin")]
         public async Task<Tenant> Get(string Id)
         {

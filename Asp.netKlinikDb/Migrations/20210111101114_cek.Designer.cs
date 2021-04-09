@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Asp.netKlinikDb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201213153720_perbaikanbiayakelipatan")]
-    partial class perbaikanbiayakelipatan
+    [Migration("20210111101114_cek")]
+    partial class cek
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -147,8 +147,7 @@ namespace Asp.netKlinikDb.Migrations
 
                     b.HasIndex("IdBarang");
 
-                    b.HasIndex("IdBeli")
-                        .IsUnique();
+                    b.HasIndex("IdBeli");
 
                     b.ToTable("DetailBeli");
                 });
@@ -658,8 +657,8 @@ namespace Asp.netKlinikDb.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Asp.netKlinikDb.Models.Beli", "beli")
-                        .WithOne("detailBeli")
-                        .HasForeignKey("Asp.netKlinikDb.Models.DetailBeli", "IdBeli")
+                        .WithMany("detailBeli")
+                        .HasForeignKey("IdBeli")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

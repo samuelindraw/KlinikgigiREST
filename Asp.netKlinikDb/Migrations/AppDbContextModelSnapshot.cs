@@ -145,8 +145,7 @@ namespace Asp.netKlinikDb.Migrations
 
                     b.HasIndex("IdBarang");
 
-                    b.HasIndex("IdBeli")
-                        .IsUnique();
+                    b.HasIndex("IdBeli");
 
                     b.ToTable("DetailBeli");
                 });
@@ -656,8 +655,8 @@ namespace Asp.netKlinikDb.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Asp.netKlinikDb.Models.Beli", "beli")
-                        .WithOne("detailBeli")
-                        .HasForeignKey("Asp.netKlinikDb.Models.DetailBeli", "IdBeli")
+                        .WithMany("detailBeli")
+                        .HasForeignKey("IdBeli")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

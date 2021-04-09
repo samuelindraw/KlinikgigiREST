@@ -49,9 +49,8 @@ namespace Asp.netKlinikDb.Controllers
             return models;
         }
         // GET: api/DetailBeli/5
-        [HttpGet("sortbeliid/{id}")]
+        [HttpGet("sortbeliid/{Id}")]
         [Authorize(Roles = "Admin")]
-        [Authorize(Roles  = "Admin")]
         public async Task<IActionResult> sortbeliid(int Id)
         {
 
@@ -96,6 +95,7 @@ namespace Asp.netKlinikDb.Controllers
         {
             try
             {
+
                 var data = await _Barang.GetById(detailBeli.IdBarang);
                 data.Stok = Convert.ToInt16(detailBeli.Qty + data.Stok);
                 await _DetailBeli.UpdateAsync(detailBeli);

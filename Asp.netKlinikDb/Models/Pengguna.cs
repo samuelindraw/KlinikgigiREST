@@ -45,10 +45,5 @@ namespace Asp.netKlinikDb.Models
         public bool IsEnabled { get; set; }
         [NotMapped]
         public bool Status { get; set; }
-
-        public static implicit operator Pengguna(Task<Pengguna> v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

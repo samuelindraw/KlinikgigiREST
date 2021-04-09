@@ -19,11 +19,23 @@ namespace Asp.netKlinikDb.Controllers
         private IUserRole _userRoleService;
         private UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public UserRoleController(IUserRole userroleservice, UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager)
+        private IPengguna _Pengguna;
+        private IProsentase _prosentase;
+        private IDetailPasien _detailpasien;
+        private IDetailPegawai _detailPegawai;
+        private IJenisTindakan _JenisTindakan;
+        public UserRoleController(IUserRole userroleservice, UserManager<ApplicationUser> userManager,RoleManager<IdentityRole> roleManager, IPengguna pengguna,IProsentase prosentase
+            , IDetailPegawai detailPegawai, IDetailPasien detailPasien,IJenisTindakan jenistindakan)
         {
             _userManager = userManager;
             _userRoleService = userroleservice;
             _roleManager = roleManager;
+            _Pengguna = pengguna;
+            _prosentase = prosentase;
+            _detailpasien = detailPasien;
+            _detailPegawai = detailPegawai;
+            _JenisTindakan = jenistindakan;
+            
         }
         [HttpPost]
         [Authorize(Roles = "Admin")]
@@ -41,7 +53,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // PUT: api/KatBarang/5
         [HttpPut]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Put([FromBody] UserRole userRole)
         {
             try
@@ -56,33 +68,31 @@ namespace Asp.netKlinikDb.Controllers
         }
         // GET: api/UserRole/5
         [HttpGet("{roleName}", Name = "GetbyRoleName")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<UserRole> Get(string roleName)
         {
             var model = await _userRoleService.GetById(roleName);
             return model;
         }
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<UserRole>>GetRoles()
         {
-
             var models = await _userRoleService.GetAllRoles();
             return models;
         }
         [HttpGet]
         [Route("GetUserRole")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         // Get: api/GetUserRole/ PAKE ROUTE AGAR AKSES NYA TIDAK NUMPUK DENGAN GET ID
         // Use ActionResult jika anda ingin pass data dari client melalui parameter
         public async Task<IActionResult> GetUserRole(string roleName)
         {
             var model = await _userRoleService.GetUserRole(roleName);
             return Ok(model);
-
         }
         [HttpDelete("{roleName}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string roleName)
         {
             try
@@ -98,12 +108,11 @@ namespace Asp.netKlinikDb.Controllers
         [HttpPost]
         //[Authorize(Roles = "Admin")]
         [Route("addusertorole")]
-        public async Task<IActionResult> AddUserToRole([FromBody] Users user)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddUserToRole([FromBody] User user)
         {
-
             try
             {
-
                 await _userRoleService.AddUserToRoleAsync(user.Username, user.rolename);
                 return Ok("User yang telah di masukan ke role ini Berhasil");
             }
@@ -111,34 +120,79 @@ namespace Asp.netKlinikDb.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
-
         }
         [HttpPost]
         //[Authorize(Roles = "Admin")]
         [Route("editusertorole")]
-        public async Task<IActionResult> EditUserToRole([FromBody] Users user)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> EditUserToRole([FromBody] User user)
         {
-
             try
             {
+                if (user.rolename == "Pasien")
+                {
+                    return BadRequest("ROLE PASIEN TIDAK DATA DI UBAH");
+                }
                 await _userRoleService.RemoveuserRole(user.Username, user.currentrole);
                 await _userRoleService.AddUserToRoleAsync(user.Username, user.rolename);
+                
+                var datapengguna = await _Pengguna.getpenggunausername(user.Username);
+                datapengguna.rolename = user.rolename;
+                
+                if (user.rolename == "Dokter")
+                {
+                    datapengguna.Prosentase = 10;
+                   
+                    var dataexist = await _detailPegawai.getusername(user.Username,datapengguna.TenantID);
+                    if (dataexist.Jabatan == "Dokter")
+                    {
+                        dataexist.Username = user.Username;
+                        dataexist.Jabatan = user.rolename;
+                        dataexist.Gaji = 10;
+                        dataexist.TanggalJoin = DateTime.Today;
+                        await _detailPegawai.UpdateAsync(dataexist);
+                    }
+                    await _Pengguna.UpdateAsync(datapengguna);
+                    var dt_prosen = await _prosentase.getbytenantid(datapengguna.TenantID);
+                    var dt_jenisTindakan = await _JenisTindakan.getbytenantid(datapengguna.TenantID);
+                    //foreach (var dt_jenis in dt_jenisTindakan)
+                    //{
+                      
+                    //    Prosentase prosen = new Prosentase();
+                    //    prosen.Username = datapengguna.Username;
+                    //    prosen.IdJenisTindakan = dt_jenis.IdJenisTindakan;
+                    //    prosen.Prosen = datapengguna.Prosentase;
+                    //    prosen.TenantID = datapengguna.TenantID;
+                    //    prosen.DetailPegawaiID = dataexist.DetailPegawaiID;
+                    //    await _prosentase.CreateAsync(prosen);
+                    //}
+                }
+                else
+                {
+                    var dataexist = await _detailPegawai.getusername(user.Username, datapengguna.TenantID);
+                    if (dataexist.Jabatan == "Dokter")
+                    {
+                        dataexist.Username = user.Username;
+                        dataexist.Jabatan = user.rolename;
+                        dataexist.TanggalJoin = DateTime.Today;
+                        dataexist.Gaji = 2000000;
+                        await _detailPegawai.UpdateAsync(dataexist);
+                        await _prosentase.Deletebyusername(user.Username);
+                    }
+                }
                 return Ok("User yang telah berhasil edit dan di pindah ke role ini Berhasil");
+                //POKOE ASSING ROLE BARU = UPDATE KE DALEM PENGGUNA
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-
-
         }
         [HttpDelete]
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [Route("removeuserrole")]
-        public async Task<IActionResult> removeuserrole([FromBody] Users user)
+        public async Task<IActionResult> removeuserrole([FromBody] User user)
         {
-         
             try
             {
                 await _userRoleService.RemoveuserRole(user.Username, user.rolename);
@@ -148,8 +202,6 @@ namespace Asp.netKlinikDb.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
-
         }
     }
 }

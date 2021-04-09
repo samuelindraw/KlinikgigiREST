@@ -21,7 +21,6 @@ namespace Asp.netKlinikDb.DAL
         public async Task CreateAsync(TenantPengguna obj)
         {
 
-
             var tenantpengguna = await _context.TenantPengguna.Where(r => r.TenantID == obj.TenantID && r.Username == obj.Username).SingleOrDefaultAsync();
             //var data = await getuserbytenantid(obj.TenantID);//ini hasilnya list
             ////stelah data tenant di dapat maka menncari
@@ -77,7 +76,7 @@ namespace Asp.netKlinikDb.DAL
 
         public async Task<IEnumerable<TenantPengguna>> GetAll()
         {
-            var results = await(from t in _context.TenantPengguna
+            var results = await(from t in _context.TenantPengguna.Include(r=>r.pengguna)
                                 orderby t.TenantPenggunaID
                                 select t).ToListAsync();
             return results;

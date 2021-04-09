@@ -51,17 +51,17 @@ namespace Asp.netKlinikDb.DAL
                     if (tnt_transaksi.TenantID == tnt_pengguna.TenantID && dt_JenisTindakanid.TenantID == tnt_pengguna.TenantID)
                     {
                         var dt_prosentase = await _context.Prosentase.Where(r => r.Username == tnt_pengguna.Username).Include(r => r.JenisTindakan).ToListAsync();
-                        var result = dt_prosentase.Where(e => e.IdJenisTindakan == obj.IdJenisTindakan).SingleOrDefault();
+                        var result = dt_prosentase.Where(e => e.IdJenisTindakan == obj.IdJenisTindakan).FirstOrDefault();
 
                         obj.Persenan = Convert.ToInt16(result.Prosen);
                         
                         _context.Add(obj);
                         await _context.SaveChangesAsync();
                         List<pilihGIgi> stc = new List<pilihGIgi>();
-                        
+
                         foreach (var item in obj.GigiRawatK1)
                         {
-                            
+
                             if (item.IsChecked == true)
                             {
                                 stc.Add(new pilihGIgi() { IdTindakan = obj.IdTindakan, idposisiGigi = item.id });
@@ -137,7 +137,7 @@ namespace Asp.netKlinikDb.DAL
                         obj.Posisi = stc;
                         obj.IdTindakan = obj.IdTindakan;
                         await UpdateAsync(obj);
-                       
+
                     }
 
                 }
@@ -175,12 +175,12 @@ namespace Asp.netKlinikDb.DAL
                 {
                     if (tnt_transaksi.TenantID == tnt_pengguna.TenantID && dt_JenisTindakanid.TenantID == tnt_pengguna.TenantID)
                     {
-                       
+
                         var dt_prosentase = await _context.Prosentase.Where(r => r.Username == tnt_pengguna.Username && r.TenantID == obj.TenantID).ToListAsync();
-                        var result = dt_prosentase.Where(e => e.IdJenisTindakan == obj.IdJenisTindakan).SingleOrDefault();
+                        var result = dt_prosentase.Where(e => e.IdJenisTindakan == obj.IdJenisTindakan).FirstOrDefault();
 
                         obj.Persenan = Convert.ToInt16(result.Prosen);
-                      
+
                         List<pilihGIgi> stc = new List<pilihGIgi>();
 
                         foreach (var item in obj.GigiRawatK1)

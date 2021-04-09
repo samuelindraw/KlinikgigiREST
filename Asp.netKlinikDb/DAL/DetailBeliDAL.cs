@@ -38,7 +38,7 @@ namespace Asp.netKlinikDb.DAL
                     Beli datapembelian = new Beli();
                     datapembelian = await _Beli.GetById(obj.IdBeli);
                     datapembelian.TotalHarga = datapembelian.TotalHarga + obj.TotalHarga;
-                    var update = _Beli.UpdateAsync(datapembelian);
+                    await _Beli.UpdateAsync(datapembelian);
                     //mendapatkan data barang berdasarkan input ID
                     //ketika data barang ada maka stok nya di update dengan stok awal + qty yang akan dinput
                  
@@ -55,7 +55,6 @@ namespace Asp.netKlinikDb.DAL
             }
             
         }
-
         public async Task Deletes(string id)
         {
             var data = await getbyid(id.ToString());
@@ -104,10 +103,10 @@ namespace Asp.netKlinikDb.DAL
                              select c).SingleOrDefaultAsync();
             return data;
         }
-        public async Task<IEnumerable<DetailBeli>> sortbyidbeli(int IdBeli)
+        public async Task<IEnumerable<DetailBeli>> sortbyidbeli(int Id)
         {
             var data = await (from r in _context.DetailBeli.Include(r => r.Barang).Include(r => r.beli)
-                              where r.IdBeli == IdBeli
+                              where r.IdBeli == Id
                               select r).ToListAsync();
 
 

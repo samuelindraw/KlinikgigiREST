@@ -16,7 +16,7 @@ namespace Asp.netKlinikDb.Data
         Task<bool> CheckUserInRoleAsync(string username, string rolename);
         Task DeleteRolesAsync(string roleName);
         Task<IEnumerable<UserRole>> GetAllRoles();
-        Task<IEnumerable<Users>>GetUserRole(string roleName);
+        Task<IEnumerable<User>>GetUserRole(string roleName);
         Task<UserRole>GetById(string roleName);
     }
 }

@@ -40,20 +40,6 @@ namespace Asp.netKlinikDb.Controllers
             var model = await _DetailPegawai.getusername(Username, tenantID);
             return model;
         }
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Post([FromBody] DetailPegawai DetailPegawai)
-        {
-            try
-            {
-                await _DetailPegawai.CreateAsync(DetailPegawai);
-                return Ok("Tambah Data Berhasil");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
         // DELETE: api/KatBarang/5
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]

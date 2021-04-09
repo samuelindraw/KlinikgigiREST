@@ -10,6 +10,6 @@ namespace Asp.netKlinikDb.Data
     {
         Task<DetailBeli> getbyid(string tenantname);
         Task Deletes(string id);
-        Task<IEnumerable<DetailBeli>> sortbyidbeli(int IdBeli);
+        Task<IEnumerable<DetailBeli>> sortbyidbeli(int Id);
     }
 }

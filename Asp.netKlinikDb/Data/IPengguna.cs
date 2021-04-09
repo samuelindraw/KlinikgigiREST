@@ -12,7 +12,6 @@ namespace Asp.netKlinikDb.Data
         Task<Pengguna> getIdPasien(string IdPasien, string tenantID);
         Task DeletebyUser(string Username);
         Task Updatetenant(Pengguna obj);
-
         Task<IEnumerable<Pengguna>> dataUserPerTenant(string tenantID, string rolename);
     }
 }

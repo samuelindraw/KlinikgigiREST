@@ -103,6 +103,7 @@ namespace Asp.netKlinikDb.DAL
                              where c.IdJual == id
                              select c).SingleOrDefaultAsync();
             return data;
+            
         }
 
         public async Task UpdateAsync(Jual obj)

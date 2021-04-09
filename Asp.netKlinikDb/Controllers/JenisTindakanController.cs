@@ -20,7 +20,6 @@ namespace Asp.netKlinikDb.Controllers
         {
             _JenisTindakan = _jenisTindakan;
         }
-
         // GET: api/jenistindakan
         [HttpGet]
         [Authorize(Roles = "Admin, Dokter")]
@@ -30,13 +29,11 @@ namespace Asp.netKlinikDb.Controllers
             var Models = await _JenisTindakan.GetAll();
             return Models;
         }
-
         // GET: api/JenisTindakan/5
         [HttpGet("{id}")]
         [Authorize(Roles = "Admin, Dokter")]
         public async Task<JenisTindakan> Get(int id)
         {
-
             var model = await _JenisTindakan.GetById(id);
             return model;
         }
@@ -45,12 +42,10 @@ namespace Asp.netKlinikDb.Controllers
         [Authorize(Roles = "Admin,Dokter")]
         // POST: api/getbarangbytenantid/ PAKE ROUTE AGAR AKSES NYA TIDAK NUMPUK DENGAN GET ID
         // CEK apakah id kat barang sudah sesuai dengan Tenant s
-        public async Task<IActionResult> getkatjenistindakanbytenantid(string TenantID)
+        public async Task<IActionResult> getkatjenistindakanbytenantid(string tenantID)
         {
-
-            var model = await _JenisTindakan.getbytenantid(TenantID);
+            var model = await _JenisTindakan.getbytenantid(tenantID);
             return Ok(model);
-
         }
         [HttpGet("sort-id-katjenis/{Id}")]
         [Authorize(Roles = "Admin,Dokter")]
@@ -58,10 +53,8 @@ namespace Asp.netKlinikDb.Controllers
         // CEK apakah id kat barang sudah sesuai dengan Tenant s
         public async Task<IActionResult> sortIdKatjenis(int Id)
         {
-
             var model = await _JenisTindakan.getidkatjenis(Id);
             return Ok(model);
-
         }
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
@@ -77,7 +70,6 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         // POST: api/KatBarang
         [HttpPost]
         [Authorize(Roles = "Admin")]

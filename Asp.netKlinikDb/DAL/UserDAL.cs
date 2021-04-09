@@ -22,8 +22,7 @@ namespace Asp.netKlinikDb.DAL
 {
     public class UserDAL : IUser
     {
-        //THIS USER CONTROLER SEBAGAI ADMIN PAGE DARI ROLES DAN USER 
-
+        //THIS USER CONTROLER SEBAGAI ADMIN PAGE DARI ROLES DAN USER    
         private AppSettings _appSettings;
         private UserManager<ApplicationUser> _userManager;
         private SignInManager<ApplicationUser> _signInManager;
@@ -88,7 +87,7 @@ namespace Asp.netKlinikDb.DAL
             };
             
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
+            user.Token      = tokenHandler.WriteToken(token);
             // remove password before returning
             var rolename = (_option.ClaimsIdentity.RoleClaimType, role.SingleOrDefault()).Item2;
             user.rolename = rolename.ToString();
@@ -375,7 +374,7 @@ namespace Asp.netKlinikDb.DAL
             string url = $"{_configuration["AppUrl"]}/user/resetpassword/?email={Email}&token={validToken}";
             //_config adalah alamat dari client yang akan di akses letaknya di appssettings.json
             var message = new Message(new String[] { Email }, "Reset Password", "<h1>Follow the instructions to reset your password</h1>" +
-                $"<p>To reset your password <a href='{url}'>Click here</a></p>");
+                $"<p>To reset your password '{validToken}' <a href='{url}'>Click here</a></p>");
             _emailSender.SendEmail(message);
             //EmailSender service untuk mengirim email _config email sender di urus di appsetinggs
             return new User

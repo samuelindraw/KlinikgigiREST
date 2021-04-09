@@ -30,6 +30,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // GET: api/Transaksi
         [HttpGet]
+        ///hapus authorized
         [Authorize(Roles  = "Admin, Dokter")]
         public async Task<IEnumerable<Transaksi>> Transaksi()
         {
@@ -37,7 +38,7 @@ namespace Asp.netKlinikDb.Controllers
             return Models;
         }
         // GET: api/Transaksi/5
-        [HttpGet("{id}")]
+        [HttpGet("{Id}")]
         [Authorize(Roles = "Admin,Dokter,Perawat,Pasien")]
         public async Task<Transaksi> Get(int Id)
         {
@@ -65,7 +66,7 @@ namespace Asp.netKlinikDb.Controllers
             }
         }
         // DELETE: api/Transaksi/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{Id}")]
         [Authorize(Roles  = "Admin")]
         public async Task<IActionResult> Delete(int Id)
         {
@@ -87,7 +88,7 @@ namespace Asp.netKlinikDb.Controllers
         }
         // DELETE: api/Transaksi/5
         [HttpDelete("BatalTransaksi/{Id}")]
-        [Authorize(Roles = "Dokter")]
+        [Authorize(Roles = "Admin,Dokter")]
         public async Task<IActionResult> BatalTransaksi(int Id)
         {
             try

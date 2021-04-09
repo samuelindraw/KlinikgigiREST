@@ -38,21 +38,6 @@ namespace Asp.netKlinikDb.Controllers
             var model = await _DetailPasien.getbyidpasien(Idpasien, tenantID);
             return model;
         }
-        [HttpPost]
-        [Authorize(Roles = "Admin,Dokter,Perawat")]
-        public async Task<IActionResult> Post([FromBody] DetailPasien DetailPasien)
-        {
-            try
-            {
-                await _DetailPasien.CreateAsync(DetailPasien);
-                return Ok("Tambah Data Berhasil");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -67,8 +52,8 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }
         }
-      
-        [HttpDelete("{Username}")]
+
+        [HttpDelete("deletebyusername/{Username}")]
         [Authorize(Roles = "Admin,Dokter,Perawat")]
         public async Task<IActionResult> DeleteUser(string Username)
         {

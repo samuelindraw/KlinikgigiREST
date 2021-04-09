@@ -29,6 +29,7 @@ namespace Asp.netKlinikDb.DAL
         }
         public async Task CreateAsync(JenisTindakan obj)
         {
+
             //result dengan mencari dari hasil search tenant
             var data = await getbytenantid(obj.TenantID);
             //var result = data.Where(e => e.Jenis == obj.Jenis).ToList();
@@ -36,27 +37,30 @@ namespace Asp.netKlinikDb.DAL
             //mencari data tenant ccc
             if (result == null)
             {
-               
-                var dt_dokter = await _pengguna.dataUserPerTenant(obj.TenantID,"Dokter");
-                var result2 = dt_dokter.Where(e => e.TenantID == obj.TenantID).ToList();
+                //getuserroledokterdulu
+                //dicekusertsbadaditenantsesuaiinputkah
+                //loopuntukinput
+                //var dt_dokter = await _context.Pengguna.Where(r => r.rolename == "Dokter").ToListAsync();
+                var dt_dokter = await _context.TenantPengguna.Where(r => r.TenantID == obj.TenantID).Include(r=>r.pengguna).ToListAsync();
+                var result2 = dt_dokter.Where(r => r.pengguna.rolename == "Dokter").ToList();
                 if (result2.Count == 0)
                 {
                     throw new Exception("Data pengguna di tenant ini tidak ada");
                 }
                 _context.Add(obj);
                 IdentityOptions _option = new IdentityOptions();
-                foreach (var dokter in dt_dokter)
+                foreach (var dokter in result2)
                 {
                    
-                    if (dokter.rolename == "Dokter" )
+                    if (dokter.pengguna.rolename == "Dokter" )
                     {
-                       
+                        var detailPegawai = await _context.DetailPegawai.Where(r => r.Username == dokter.Username).SingleOrDefaultAsync();
                         Prosentase dt_pros = new Prosentase();
                         dt_pros.Username = dokter.Username;
                         dt_pros.IdJenisTindakan = obj.IdJenisTindakan;
                         dt_pros.TenantID = obj.TenantID;
-                        dt_pros.Prosen = dokter.Prosentase;
-                        dt_pros.DetailPegawaiID = dokter.detailPegawai.DetailPegawaiID;
+                        dt_pros.Prosen = dokter.pengguna.Prosentase;
+                        dt_pros.DetailPegawaiID = detailPegawai.DetailPegawaiID;
                         await _Prosentase.CreateAsync(dt_pros);
                         
                     }

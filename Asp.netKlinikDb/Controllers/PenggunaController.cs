@@ -20,8 +20,6 @@ namespace Asp.netKlinikDb.Controllers
         private IUser _userService;
         private IDetailPegawai _detailPegawai;
         private ITenantPengguna _tenantPengguna;
-
-
         public PenggunaController(IUser userService, IPengguna pengguna, IUserRole userRole, ITenantPengguna tenantPengguna, IDetailPegawai detailPegawai)
         {
             _Pengguna = pengguna;
@@ -29,39 +27,35 @@ namespace Asp.netKlinikDb.Controllers
             _userService = userService;
             _tenantPengguna = tenantPengguna;
             _detailPegawai = detailPegawai;
-            
         }
         // GET: api/Tenant
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<Pengguna>> getall()
         {
-            
             var Models = await _Pengguna.GetAll();
             return Models;
         }
         //}
         // GET: api/User/5
         [HttpGet("getpenggunausername/{Username}")]
-        //[Authorize(Roles = "Admin,Perawat,Dokter,Pasien")]
+        [Authorize(Roles = "Admin,Perawat,Dokter,Pasien")]
         public async Task<Pengguna> Get(string Username)
         {
-
             var model = await _Pengguna.getpenggunausername(Username);
             var usertenantlist = await _tenantPengguna.getusertenantlist(Username);
             model.TenantPengguna = usertenantlist;
-
             return model;
         }
         [HttpGet("getuserbyrole/{tenantID}/{rolename}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<Pengguna>> getuserbyrole(string tenantID, string rolename)
         {
             var model = await _Pengguna.dataUserPerTenant(tenantID, rolename);
             return model;
         }
         [HttpGet("getlistpasien/{tenantID}/{rolename}")]
-        [Authorize(Roles = "Admin, Dokter, Perawat")]
+        //[Authorize(Roles = "Admin, Dokter, Perawat")]
         public async Task<IEnumerable<Pengguna>> getlistpasien(string tenantID, string rolename)
         {
             var model = await _Pengguna.dataUserPerTenant(tenantID, rolename);

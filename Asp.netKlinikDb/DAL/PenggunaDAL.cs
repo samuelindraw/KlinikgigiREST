@@ -19,6 +19,7 @@ namespace Asp.netKlinikDb.DAL
         private IDetailPegawai _detailPegawai;
         private ITenantPengguna _tenantPengguna;
         private IProsentase _prosentase;
+ 
 
         public PenggunaDAL(AppDbContext context, UserManager<ApplicationUser> userManager, IUserRole UserRole, IUser userservice, IDetailPasien detailPasien
             ,IDetailPegawai detailPegawai, ITenantPengguna tenantpengguna, IProsentase prosentase)
@@ -33,6 +34,7 @@ namespace Asp.netKlinikDb.DAL
             _prosentase = prosentase;
            
            
+           
         }
         public async Task CreateAsync(Pengguna obj)
         {
@@ -41,10 +43,10 @@ namespace Asp.netKlinikDb.DAL
             if (datapengguna == null)
             {
                
-                if(datapengguna.rolename != "Dokter")
-                {
-                    obj.Prosentase = 0;
-                }
+                //if(datapengguna.rolename != "Dokter")
+                //{
+                //    obj.Prosentase = 0;
+                //}
                 _context.Add(obj);
                
                 await _context.SaveChangesAsync();
@@ -57,19 +59,27 @@ namespace Asp.netKlinikDb.DAL
         //UNTUK GET LIST PASIEN PER TENANT
         public async Task<IEnumerable<Pengguna>> dataUserPerTenant(string tenantID, string rolename)
         {
-            var data = await(from c in _context.Pengguna.Include(r => r.Tenant).Include( r=> r.detailPegawai).Include(r=>r.TenantPengguna)
+            var data = await(from c in _context.Pengguna.Include(r => r.Tenant).Include(r=>r.TenantPengguna)
                              where c.rolename == rolename
                              select c).ToListAsync();
+           
 
             foreach(var item in data)
             {
                 var identityuser = await _userManager.FindByNameAsync(item.Username);
                 var finduserrole = await _userManager.GetRolesAsync(identityuser);
-             
+
                 IdentityOptions _option = new IdentityOptions();
                 var userrole = (_option.ClaimsIdentity.RoleClaimType, finduserrole.SingleOrDefault()).Item2;
                 var lookedEnabled = await _userService.GetbyUsername(item.Username);
-                
+                //get detail pegawai disini 
+                //atau searcg perADD 
+                if (item.rolename != "Pasien")
+                {
+                    var detailidpegawai = _context.DetailPegawai.Where(r => r.Username == item.Username).Single().DetailPegawaiID;
+                    item.detailPegawai.DetailPegawaiID = detailidpegawai;//FIXED
+                    
+                }
                 item.rolename = userrole;
                 item.IsEnabled = lookedEnabled.IsEnabled;
                 item.Status = lookedEnabled.Status;
@@ -84,9 +94,8 @@ namespace Asp.netKlinikDb.DAL
                 }
                
             }
-
-            var datauser = data.Where(x => x.TenantID == tenantID).ToList();
-   
+            
+            var datauser = data.Where(x => x.rolename == rolename && x.TenantID == tenantID).ToList();
            
             return datauser;
         }
@@ -163,9 +172,11 @@ namespace Asp.netKlinikDb.DAL
 
         public async Task<Pengguna> getIdPasien(string IdPasien, string tenantID)
         {
-            var data = await (from c in _context.Pengguna.Include(r => r.detailPasien).Include(r => r.Tenant).Include(r => r.TenantPengguna).ThenInclude(r => r.Tenant)
+            var data = await (from c in _context.Pengguna.Include(r => r.Tenant)
                               where c.IdPasien == IdPasien 
                               select c).SingleOrDefaultAsync();
+          
+            data.TenantPengguna =  _context.TenantPengguna.Where(r => r.Username == data.Username).Include(r => r.Tenant).ToList();
 
             var identityuser = await _userManager.FindByNameAsync(data.Username);
             var finduserrole = await _userManager.GetRolesAsync(identityuser);
@@ -179,16 +190,18 @@ namespace Asp.netKlinikDb.DAL
         //pada saat admin edit user lain 
         public async Task<Pengguna> getpenggunausername(string Username)
         {
-            var data = await(from c in _context.Pengguna.Include(r=>r.detailPegawai)
+            var data = await(from c in _context.Pengguna
                              where c.Username == Username
                              select c).SingleOrDefaultAsync();
+            if (data != null)
+            {
+                var identityuser = await _userManager.FindByNameAsync(Username);
+                var finduserrole = await _userManager.GetRolesAsync(identityuser);
+                IdentityOptions _option = new IdentityOptions();
+                var userrole = (_option.ClaimsIdentity.RoleClaimType, finduserrole.SingleOrDefault()).Item2;
+                data.rolename = userrole;
+            }
 
-            var identityuser = await _userManager.FindByNameAsync(Username);
-            var finduserrole = await _userManager.GetRolesAsync(identityuser);
-            IdentityOptions _option = new IdentityOptions();
-            var userrole = (_option.ClaimsIdentity.RoleClaimType, finduserrole.SingleOrDefault()).Item2;
-            data.rolename = userrole;
-            
             return data;
         }
         public async Task UpdateAsync(Pengguna obj)
@@ -210,18 +223,19 @@ namespace Asp.netKlinikDb.DAL
                 {
                     await _UserRole.AddUserToRoleAsync(obj.Username, obj.rolename);
                 }
-                if (obj.rolename != "Pasien")
+                if (obj.rolename == "Perawat")
                 {
                     if (getdatapengguna.IdPasien != null)
                     {
                         obj.IdPasien = null;
+                      
+                        
+                    }
+                    if (await _prosentase.getbyusername(obj.Username) == null)
+                    {
+                        await _prosentase.Deletebyusername(obj.Username);
                     }
                     var detailpasien = await _detailPasien.getusername(obj.Username);
-                    if(detailpasien != null)
-                    {
-                        await _detailPasien.DeleteByuser(obj.Username);
-                    }
-                   
                     DetailPegawai pegawai = new DetailPegawai();
 
                     var pegawaii = await _detailPegawai.getusername(obj.Username,obj.TenantID);
@@ -229,11 +243,77 @@ namespace Asp.netKlinikDb.DAL
                     
                     {
                         pegawai.Username = obj.Username;
-                        pegawai.Jabatan = obj.rolename;
+                        pegawai.Jabatan = "Perawat";
                         pegawai.TanggalJoin = DateTime.Today;
                         await _detailPegawai.CreateAsync(pegawai);
                     }
+                    else
+                    {
+                        pegawai.Username = obj.Username;
+                        pegawai.Jabatan = "Perawat";
+                        pegawai.TanggalJoin = DateTime.Today;
+                        await _detailPegawai.UpdateAsync(pegawai);
+                    }
                     // create data pegawai 
+
+                }
+                if (obj.rolename == "Dokter")
+                {
+                    if (getdatapengguna.IdPasien != null)
+                    {
+                        obj.IdPasien = null;
+                    }
+                    if(getdatapengguna.Prosentase == 0)
+                    {
+                        obj.Prosentase = 30;
+                    }
+                    
+                    var detailpasien = await _detailPasien.getusername(obj.Username);
+                    //if (detailpasien != null)
+                    //{
+                    //    await _detailPasien.DeleteByuser(obj.Username);
+                    //}
+                    //tidak akan di delete karena bergantung pada detailidpasien pada bagian transaksi
+                    DetailPegawai pegawai = new DetailPegawai();
+
+                    var pegawaii = await _detailPegawai.getusername(obj.Username, getdatapengguna.TenantID);
+                    if (pegawaii == null)
+
+                    {
+                        pegawai.Username = obj.Username;
+                        pegawai.Jabatan = "Dokter";
+                        pegawai.TanggalJoin = DateTime.Today;
+                        await _detailPegawai.CreateAsync(pegawai);
+                    }
+                    else
+                    {
+                        pegawai.Username = obj.Username;
+                        pegawai.Jabatan = "Dokter";
+                        pegawai.TanggalJoin = DateTime.Today;
+                        await _detailPegawai.UpdateAsync(pegawai);
+                    }
+
+                    var dt_prosen = await _context.Prosentase.Where(r => r.Username == getdatapengguna.Username && r.TenantID == getdatapengguna.TenantID).ToListAsync();
+                    if (dt_prosen == null)
+                    {
+                        var dt_jenisTindakan = await _context.JenisTindakan.Where(r => r.TenantID == getdatapengguna.TenantID).Include(r => r.Prosentase).ToListAsync();
+
+
+
+                        foreach (var dt_jenis in dt_jenisTindakan)
+                        {
+                            // create data pegawai 
+                            Prosentase prosen = new Prosentase();
+                            prosen.Username = obj.Username;
+                            prosen.IdJenisTindakan = dt_jenis.IdJenisTindakan;
+                            prosen.Prosen = obj.Prosentase;
+                            prosen.TenantID = getdatapengguna.TenantID;
+                            prosen.DetailPegawaiID = pegawaii.DetailPegawaiID;
+                            await _prosentase.CreateAsync(prosen);
+                        }
+                    }
+
+                   
 
                 }
                 else if (obj.rolename == "Pasien")
@@ -249,6 +329,14 @@ namespace Asp.netKlinikDb.DAL
                         detpasien.Username = obj.Username;
                         detpasien.Registrasi = DateTime.Today;
                         await _detailPasien.CreateAsync(detpasien);
+                    }
+                    else
+                    {
+                        obj.IdPasien = "pasien" + obj.Username;
+                        detpasien.IdPasien = obj.IdPasien;
+                        detpasien.Username = obj.Username;
+                        detpasien.Registrasi = DateTime.Today;
+                        await _detailPasien.UpdateAsync(detpasien);
                     }
                 }
                 Users user = new Users();

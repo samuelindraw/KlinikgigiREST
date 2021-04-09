@@ -28,11 +28,8 @@ namespace Asp.netKlinikDb.Controllers
         private IJenisTindakan _JenisTindakan;
         private IEmailSender _emailSender;
         private AppDbContext _context;
-
-
         private UserManager<ApplicationUser> _userManager;
         private IProsentase  _prosentase;
-
 
         public UserController(IUser userService, UserManager<ApplicationUser> userManager, 
             IPengguna pengguna, IDetailPasien detailpasien, 
@@ -50,11 +47,7 @@ namespace Asp.netKlinikDb.Controllers
             _JenisTindakan = jenisTindakan;
             _emailSender = emailSender;
             _context = context;
-            
-        
-
         }
-        
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<IActionResult> AuthenticateAsync([FromBody]User userParam)
@@ -74,10 +67,8 @@ namespace Asp.netKlinikDb.Controllers
                 {
                     return BadRequest("User " + user.Username + " di tenant ini tidak aktif");
                 }
- 
                 else
                 {
-                    
                     //sebagai pertanda user login di tenant mana 
                     user.TenantID = tenantpengguna.TenantID;
                     user.TenantName = tenantpengguna.Tenant.TenantName;
@@ -103,7 +94,6 @@ namespace Asp.netKlinikDb.Controllers
         {
             try
             {
-                
                 await _userService.Register(userModel);
                 await _userService.AddUserToRole(userModel);
                 //ambil data role dari yang udah ada 
@@ -129,21 +119,6 @@ namespace Asp.netKlinikDb.Controllers
                     pengguna.Prosentase = 0;
                 }
                 ////test it will it be okey if there same username again ? 
-               
-                if (userModel.rolename == "Pasien")
-                {
-                    pengguna.IdPasien = "Pasien" + pengguna.Username;
-                    await _userService.addpengguna(pengguna);
-                    DetailPasien detailpasien = new DetailPasien();
-                    detailpasien.Registrasi = DateTime.Today;
-                    detailpasien.IdPasien = pengguna.IdPasien;
-                    detailpasien.Username = pengguna.Username;
-                    detailpasien.RwPenyakit = userModel.RwPenyakit;
-                    detailpasien.Registrasi = userModel.Registrasi;
-                    await _detailPasien.CreateAsync(detailpasien);
-                }
-                else
-                {
                     pengguna.IdPasien = null;
                     var tenant = userModel.TenantID;
                     pengguna.TenantID = tenant;
@@ -170,12 +145,8 @@ namespace Asp.netKlinikDb.Controllers
                             prosen.TenantID = userModel.TenantID;
                             prosen.DetailPegawaiID = detailPegawai.DetailPegawaiID;
                             await _prosentase.CreateAsync(prosen);
-                        }
-
-                        
+                        }                     
                     }
-                  
-                }
                 TenantPengguna tenantPengguna = new TenantPengguna();
                 tenantPengguna.Username = userModel.Username;
                 tenantPengguna.TenantID = userModel.TenantID;
@@ -193,7 +164,9 @@ namespace Asp.netKlinikDb.Controllers
         {
             try
             {
+                //register kedalam user identity 
                 await _userService.Register(userModel);
+                // register kddalam role
                 await _userService.AddUserToRole(userModel);
                 Pengguna pengguna = new Pengguna();
                 pengguna.Username = userModel.Username;
@@ -209,11 +182,8 @@ namespace Asp.netKlinikDb.Controllers
                 pengguna.Umur = userModel.umur;
                 pengguna.Prosentase = 0;
                 pengguna.IdPasien = "Pasien" + pengguna.Username;
-                await _userService.addpengguna(pengguna);
-                
-
-
-
+                await _Pengguna.CreateAsync(pengguna);
+                //add detailpasien (manual >)
                 DetailPasien detailpasien = new DetailPasien();
                 detailpasien.Registrasi = DateTime.Today;
                 detailpasien.IdPasien = pengguna.IdPasien;
@@ -221,14 +191,13 @@ namespace Asp.netKlinikDb.Controllers
                 detailpasien.RwPenyakit = userModel.RwPenyakit;
                 detailpasien.Registrasi = userModel.Registrasi;
                 await _detailPasien.CreateAsync(detailpasien);
-
-
+                //tenangpengguna manual ?
                 TenantPengguna tenantPengguna = new TenantPengguna();
                 tenantPengguna.Username = userModel.Username;
                 tenantPengguna.TenantID = userModel.TenantID;
                 await _userService.TenantPengguna(tenantPengguna);
                 return Ok("Pendaftaran Anda Berhasil");
-
+                //1. user identity, 2. pengguna 3. detailpasien, 4.tenantpengguna
 
             }
             catch (Exception ex)
@@ -237,12 +206,10 @@ namespace Asp.netKlinikDb.Controllers
             }
         }
         [HttpGet("getall")]
-       // [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<Users>> GetUsers()
         { 
-
             var models = await _userService.GetAll();
-         
             return models;
         }
         [HttpPut("Enable/{Username}")]
@@ -257,7 +224,6 @@ namespace Asp.netKlinikDb.Controllers
                 users.Username = user.UserName;
                 if(user.IsEnabled == true )
                 {
-                   
                     users.IsEnabled = false;
                     users.Status = false;
                 }
@@ -274,23 +240,12 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        //// GET: api/User/5
-        //[HttpGet("getuserbyusername/{userName}")]
-        //[Authorize(Roles = "Admin")]
-        //public async Task<ApplicationUser> Get(string userName)
-        //{
-        //    var model = await _userService.GetbyUsername(userName);
-        //    return model;
-        //}
         [HttpPost("ForgetPassword")]
         public async Task<IActionResult> ForgetPassword([FromBody]EmailForget emailForget)
         {
                 var result = await _userService.ForgetPassword(emailForget.Email);
                 if (result.Email == emailForget.Email)
-                    return Ok("Password telah di reset silahkan cek Email anda !"); // 200
-           
-          
-
+                    return Ok("Password telah di reset silahkan cek Email anda !"); // 200         
             return BadRequest("Kesalahan"); // 400
         }
         [HttpPost("ChangePassword")]
@@ -302,8 +257,6 @@ namespace Asp.netKlinikDb.Controllers
 
                 if (result.Status == 200)
                     return Ok("Password anda telah terubah, silahkan melakukan login kembali");
-
-
             }
             return BadRequest("Some properties are not valid");
         }
@@ -317,10 +270,7 @@ namespace Asp.netKlinikDb.Controllers
 
                 if (result.Email == model.Email)
                     return Ok("Password anda telah terubah, silahkan melakukan login kembali");
-
-               
             }
-
             return BadRequest("Some properties are not valid");
         }
         // DELETE: api/User/5
@@ -332,10 +282,9 @@ namespace Asp.netKlinikDb.Controllers
            
             try
             {
-                
                 Pengguna pengguna = new Pengguna();
                 pengguna = await _Pengguna.getpenggunausername(Username);
-                if(pengguna != null)
+                if (pengguna != null)
                 {
                     if (pengguna.rolename == "Pasien")
                     {
@@ -344,7 +293,6 @@ namespace Asp.netKlinikDb.Controllers
                         {
                             await _detailPasien.DeleteByuser(Username);
                         }
-
                     }
                     else
                     {
@@ -356,12 +304,11 @@ namespace Asp.netKlinikDb.Controllers
                         }
                         //detail gaji to
                         //pengajian
-                        var cekpegawai = await _detailPegawai.getusername(Username,pengguna.TenantID);
+                        var cekpegawai = await _detailPegawai.getusername(Username, pengguna.TenantID);
                         if (cekpegawai != null)
                         {
                             await _detailPegawai.DeleteByuser(Username);
                         }
-
                     }
                 }
                 var tenant = await _tenantPengguna.getusertenantlist(Username);
@@ -370,9 +317,7 @@ namespace Asp.netKlinikDb.Controllers
                     await _tenantPengguna.Delete(data.TenantPenggunaID);
                 }
                 await _Pengguna.DeletebyUser(pengguna.Username);
-                await _userService.Delete(Username);
-
-
+                //await _userService.Delete(Username);
                 //delete data pengguna sekalian 
                 return Ok("Data berhasil didelete");
             }

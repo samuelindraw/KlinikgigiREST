@@ -37,7 +37,6 @@ namespace Asp.netKlinikDb.Controllers
             var models = await _Barang.sortbystok(tenantID);
             return models;
         }
-
         // GET: api/Barangs/5
         [HttpGet("{id}")]
         public async Task<Barang> Get(int id)
@@ -60,7 +59,6 @@ namespace Asp.netKlinikDb.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         // POST: api/Barangs
         [HttpPost]
         [Authorize(Roles  = "Admin")]

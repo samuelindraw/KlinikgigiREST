@@ -42,10 +42,12 @@ namespace Asp.netKlinikDb.Controllers
             try
             {
                     await _TenantPengguna.CreateAsync(tenantPengguna);
+                    var idPegawai = _context.DetailPegawai.Where(r => r.Username == tenantPengguna.Username).SingleOrDefault();
                     var datauser = await _pengguna.getpenggunausername(tenantPengguna.Username);
                     var jenistindakan =  _context.JenisTindakan.Where(r => r.TenantID == tenantPengguna.TenantID).ToList();
                     if (datauser.rolename == "Dokter")
                     {
+                    //mengecek jika dokter ia akan ditambahkan dengan prosentase nya 
                         foreach (var item in jenistindakan)
                         {
                             Prosentase dt_pros = new Prosentase();
@@ -53,16 +55,18 @@ namespace Asp.netKlinikDb.Controllers
                             dt_pros.IdJenisTindakan = item.IdJenisTindakan;
                             dt_pros.TenantID = tenantPengguna.TenantID;
                             dt_pros.Prosen = datauser.Prosentase;
-                            dt_pros.DetailPegawaiID = datauser.detailPegawai.DetailPegawaiID;
+                            dt_pros.DetailPegawaiID = idPegawai.DetailPegawaiID;
                             await _prosentase.CreateAsync(dt_pros);
                         }
-
-
                     }
-                    else
-                    {
-                        throw new Exception("Bukan data dokter");
-                    }
+                if (datauser.rolename == "Pasien")
+                {
+                    
+                }
+                else
+                {
+                    throw new Exception("Bukan data dokter");
+                }
                 return Ok("Tambah Data Berhasil");
 
             }
@@ -129,7 +133,6 @@ namespace Asp.netKlinikDb.Controllers
         {
             try
             {
-
                 var user = _context.TenantPengguna.Where(r => r.Username == Username && r.TenantID == tenantID).SingleOrDefault();
                 if (user.StatusTenant == true)
                 {

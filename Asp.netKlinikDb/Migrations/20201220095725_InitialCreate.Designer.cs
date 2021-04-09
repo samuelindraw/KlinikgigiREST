@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Asp.netKlinikDb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201126175616_Perbaikan tab;e Status Tenant")]
-    partial class PerbaikantabeStatusTenant
+    [Migration("20201220095725_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -147,8 +147,7 @@ namespace Asp.netKlinikDb.Migrations
 
                     b.HasIndex("IdBarang");
 
-                    b.HasIndex("IdBeli")
-                        .IsUnique();
+                    b.HasIndex("IdBeli");
 
                     b.ToTable("DetailBeli");
                 });
@@ -225,8 +224,6 @@ namespace Asp.netKlinikDb.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Biaya");
-
-                    b.Property<int?>("BiayaKelipatan");
 
                     b.Property<int>("IdKatJenis");
 
@@ -460,8 +457,6 @@ namespace Asp.netKlinikDb.Migrations
 
                     b.Property<int>("BiayaDasar");
 
-                    b.Property<int>("BiayaKelipatan");
-
                     b.Property<string>("Diagnosis");
 
                     b.Property<int>("IdJenisTindakan");
@@ -662,8 +657,8 @@ namespace Asp.netKlinikDb.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Asp.netKlinikDb.Models.Beli", "beli")
-                        .WithOne("detailBeli")
-                        .HasForeignKey("Asp.netKlinikDb.Models.DetailBeli", "IdBeli")
+                        .WithMany("DetailBeli")
+                        .HasForeignKey("IdBeli")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

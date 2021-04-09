@@ -39,12 +39,11 @@ namespace Asp.netKlinikDb.Controllers
         }
         // PUT: api/Barangs/5
         [HttpPut("Transaksi_Selesai")]
-        [Authorize(Roles  = "Dokter")]
-        public async Task<IActionResult> Transaksi_Selesai(Tindakan tindakan,int Id)
+        [Authorize(Roles  = "Dokter,Admin")]
+        public async Task<IActionResult> Transaksi_Selesai(Tindakan tindakan)
         {
             try
             {
-                
                 await _Tindakan.Transaksi_Selesai(tindakan);
                 return Ok("Data berhasil diupdate");
             }

@@ -13,7 +13,6 @@ namespace Asp.netKlinikDb.Data
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
-
         public DbSet<Barang> Barang { get; set; }
         public DbSet<Beli> Beli { get; set; }
         public DbSet<DetailPenggajian> DetailPenggajian { get; set; }
@@ -46,19 +45,10 @@ namespace Asp.netKlinikDb.Data
                 .HasOne(r => r.PosisiGigi)
                 .WithMany(c => c.Posisi)
                 .HasForeignKey(sc => sc.idposisiGigi);
-
-
         }
         public DbSet<Transaksi>Transaksi { get;
             set; }
-
-     
-
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
-
-
-
-
 
     }
 }
