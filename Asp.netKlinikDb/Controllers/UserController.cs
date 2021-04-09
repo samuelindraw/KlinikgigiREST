@@ -63,7 +63,11 @@ namespace Asp.netKlinikDb.Controllers
                 // menggunakan handler bahwa 1 usernama hanya akan ada di 1 tenant yang sama tetpi bisa  di tenant yang lain ...
                 //var tenant = await _userService.tenantforusername(userParam.TenantID, user.Username);
                 var tenantpengguna =  _context.TenantPengguna.Where(r => r.Username == user.Username && r.TenantID == userParam.TenantID).Include(r => r.Tenant).SingleOrDefault();
-                if(tenantpengguna.StatusTenant == false)
+                if (tenantpengguna == null)
+                {
+                    return BadRequest("Username tidak terdaftar di tenant ini !!");
+                }
+                if (tenantpengguna.StatusTenant == false)
                 {
                     return BadRequest("User " + user.Username + " di tenant ini tidak aktif");
                 }
